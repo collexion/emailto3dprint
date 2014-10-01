@@ -1,0 +1,72 @@
+body {
+	background-image:url("assets/debut_dark.png");
+}
+#titletext{
+	text-align: center;
+	margin: auto;
+	font-family: "Open Sans", sans-serif;
+	font-size: 64px;
+	color: #A5A3A3;
+}
+/* make navbar */
+	#navbar_div {
+		width: 100%;
+		text-align: center;
+	}
+	#navbar ul {
+		background: #000000;
+		padding: 0px 20px;
+		list-style: none;
+		position: relative;
+		display: inline-block;
+		margin: 0 auto;
+		border-radius: 10px;
+	}
+	#navbar ul:after {
+		content: "";
+		clear: both;
+		display: block;
+	}
+	#navbar ul li {
+		float: left;
+		padding: 0.5em 2em;
+	}
+	#navbar ul li:hover {
+		background: #1f1f1f;
+	}
+/* navbar links (lv1) */
+	#navbar ul li a:link {
+		color: #A5A5A5;
+	}
+	#navbar ul li a:visited {
+		color: #737373;
+	}
+	#navbar ul li:hover a{
+		color: #f0f0f0;
+	}
+/* navbar links (lv2) */
+	#navbar ul ul li a:link {
+		color: #A5A5A5;
+	}
+	#navbar ul ul li a:visited {
+		color: #737373;
+	}
+	#navbar ul ul li:hover a{
+		color: #f0f0f0;
+	}
+/* implement dropdown */
+	#navbar ul ul {
+		width: auto;
+		display: none;
+		padding: 0;
+		position: absolute;
+		top: 100%;
+		border-radius: 5px;
+	}
+	#navbar ul li:hover > ul {
+		display: block;
+	}
+	#navbar ul ul li {
+		float: none;
+		position: relative;
+	}
