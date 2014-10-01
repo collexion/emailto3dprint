@@ -1,13 +1,13 @@
 
 body {
-	background-image:url("assets/debut_dark.png");
+	background-image:url("debut_dark.png");
 }
 #titletext{
 	text-align: center;
 	margin: auto;
 	font-family: "Open Sans", sans-serif;
 	font-size: 64px;
-	color: #A5A3A3;
+	color: #F0F0F0;
 }
 /* Navbar styling */
 	/* make navbar */
@@ -15,9 +15,11 @@ body {
 			width: 100%;
 			text-align: center;
 		}
+		/* controls the style of the bar itself */
 		#navbar ul {
 			background: #000000;
 			padding: 0px 0px;
+			
 			list-style: none;
 			position: relative;
 			display: inline-block;
@@ -30,14 +32,13 @@ body {
 			display: block;
 		}
 		#navbar ul li {
-			/*float: left;*/
 			padding: 0.5em 2em;
 			display: inline-block;
 		}
 		#navbar ul li:hover {
 			background: #1f1f1f;
 		}
-	/* navbar links (lv1) */
+	/* navbar link style (visible) */
 		#navbar ul li a {
 			text-decoration: none;
 		}
@@ -50,7 +51,11 @@ body {
 		#navbar ul li:hover a{
 			color: #f0f0f0;
 		}
-	/* navbar links (lv2) */
+	/* navbar current page indicator style */
+		#current_navbar_link {
+			background: #202020;
+		}
+	/* navbar link style (dropdown) */
 		#navbar ul ul li a:link {
 			color: #A5A5A5;
 		}
@@ -60,7 +65,7 @@ body {
 		#navbar ul ul li:hover a{
 			color: #f0f0f0;
 		}
-	/* implement dropdown */
+	/* implement dropdown menu */
 		#navbar ul ul {
 			width: auto;
 			display: none;
@@ -82,7 +87,9 @@ body {
 }
 
 #content {
-
+	color: #A5A3A3;
+	margin-right: 10%;
+	margin-left: 10%;
 }
 #signature {
 	font-size: 75%;
