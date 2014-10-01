@@ -91,6 +91,12 @@ body {
 	margin-right: 10%;
 	margin-left: 10%;
 }
+#content a:link {
+	color: #1133EE;
+}
+#content a:visited {
+	color: #A000FF;
+}
 #signature {
 	font-size: 75%;
 	position: absolute;
