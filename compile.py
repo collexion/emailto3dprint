@@ -1,3 +1,9 @@
+"""
+To disable auto compilation, remove filename from the below
+or add
+#format ignore
+as the first line of the corresponding html file
+"""
 pages = [
 	'index',
 	'projectspec',
@@ -45,15 +51,20 @@ def main():
 						raise RuntimeError("No message given for content file \"{0}\". Newline is requred after format specification.".format(flname))
 			if format == 'markdown':
 				contents = markdown2.markdown(contents)
+			elif format == 'ignore':
+				contents = '!IGNORE!'
 			#add other formats here
 			
 			db[page] = contents
 	with open('template.html', 'r') as template:
 		template_html = template.read()
 		for (key, value) in db.items():
-			html = template_html.replace('$CONTENT$', value)
-			with open(htmlfile(key), 'w') as fl:
-				fl.write(html)
+			if value == '!IGNORE!':
+				continue
+			else:
+				html = template_html.replace('$CONTENT$', value)
+				with open(htmlfile(key), 'w') as fl:
+					fl.write(html)
 		
 		
 		
