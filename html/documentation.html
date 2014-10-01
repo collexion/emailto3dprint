@@ -25,6 +25,8 @@
 		<li id="current_navbar_link"><a href='documentation.html'>Documentation</a></li>
 		<li><a href='#'>Links</a>
 			<ul>
+				<!-- This link is here so that I can easy jump to the live version from my repo'd version -->
+				<li><a href="http://www.collexion.net/emailto3dprint/">This Site</a></li>
 				<li><a href="https:/github.com/collexion/emailto3dprint">Github Repository</a></li>
 				<li><a href="http:/www.cs.uky.edu/~paulp/CS499/index.html">CS499 Class Website</a></li>
 				<li><a href="http:/www.cirrusmio.com/">Cirrus Mio</a></li>
@@ -39,7 +41,19 @@
 	
 	<!-- Text section -->
 	<p id="container">
-		<div id="content"><p></p>
+		<div id="content"><p>
+		Will take the form of a single python script controlling a pipeline made up of a variety of other programs and libraries. The pipeline will contain N primary steps.
+		<ul>
+		<li>A poller will periodically check the email address for new, correctly formatted print jobs. It will extract the information and pass the model on to the next step of the pipe line. With luck, we will be able to implement a system that detects errors, and will return a detailed error message to the user. Worst case, we fail quickly and log the error for the admin to check and troubleshoot.</li>
+		
+		<li>A converter pass will convert a variety whatever model format we recieve from the email into a single standard model type. At this moment, we are planning to use .stl.</li>
+		<li>A validator pass will check the model, and make sure it is a valid model to be printed. This includes checking normals, confirming the model is completely enclosed, and making sure the size and volume will fit in the printer.</li>
+		<li>The next pass will convert the validated model into g-code, the instruction set for the printer. This will mostly likely be done using slic3r.pl.</li>
+		<li>The final pass will use ReplicatorG to configure the printer and send the converted model to the printer for printing.</li>
+		<li>If time permits, we will determine some way to confirm when one print job has completed, and it may begin the next. This will tie into some method of queueing jobs, in order to increase throughput.</li>
+		</ul>
+		
+		</p>
 </div>
 		<div id="signature">Contact Us at email@website.com</div>	
 	</p>
