@@ -15,9 +15,9 @@ body {
 			width: 100%;
 			text-align: center;
 		}
-		#navbar {
+		/*#navbar {
 			min-width: 950px;
-		}
+		}*/
 		/* controls the style of the bar itself */
 		#navbar ul {
 			background: #000000;
