@@ -1,10 +1,8 @@
 import imaplib        # Facilitates connection to mailserver
 import email          # Facilitates message parsing/extraction
 import os             # Used to construct attachment save path
-import configparser   # Used to read/write configuration values from/to file
-
-mailfetch_config_filename = "mailfetch.conf"
-
+import config
+import pipeline
 # General Program Flow:
 #    - Read values of configuration variables in mailfetch.conf
 #    - Prompt user for the account password
@@ -15,8 +13,19 @@ mailfetch_config_filename = "mailfetch.conf"
 #    - Extract and save found attachments
 #    - Logout and close connection
 #    - (Optional?) write configuration variables to mailfetch.conf
-def main():
-    mailfetch_config = read_config()
+
+# this means you only need to log in once.
+# run once at the top of the pipeline
+mail_password = None
+def initialize():
+	global mail_password
+	mail_password = get_password()
+	
+# reads email, gets attachments, returns all attachments as list
+def poll():
+	if mail_password == None:
+		mail_password = get_password()
+    mailfetch_config = config.read_config()
 
     servername = mailfetch_config["Mailfetch"]["server"]
     portnumber = mailfetch_config["Mailfetch"]["port"]
@@ -24,12 +33,11 @@ def main():
     mailbox = mailfetch_config["Mailfetch"]["mailbox"]
     savedir = mailfetch_config["Mailfetch"]["savedir"]
 
-    password = get_password(username)
-
     connection = open_connection(servername,portnumber)
 
-    login(connection,username,password,mailbox)
+    login(connection,username,mail_password,mailbox)
 
+	infolist = []
     messagelist = get_message_list(connection)
     for message in messagelist:
         email = get_message_contents(connection,message)
@@ -50,43 +58,27 @@ def main():
                 continue
 
             # If we make it this far, there is an attachment to be extracted and saved
-            extract_attachment(part,savedir)
+			path = extract_attachment(part,savedir)
+			
+			# put all the information here
+			jobinfo = pipeline.PrintJob(path, 'USERNAME')
+			infolist.append(jobinfo)
 
     #write_config(mailfetch_config,mailfetch_config_filename)
 
     # Clean up when done
     connection.close()
     connection.logout()
-    return 0
+	return infolist
 
 # Prompt user to enter password for the default email account
+# ~AW: This will have to be automated eventually
 def get_password(user):
     prompt = "Enter the password for " + user + ": "
     pwd = input(prompt)
     return pwd
 
-# Uses the configparser module to read configuration variable values from mailfetch.conf
-def read_config():
-    config = configparser.ConfigParser()
-    config.read(mailfetch_config_filename)
-    config.sections()
-    print("Configuration data read from",mailfetch_config_filename,"...")
-    return config
 
-# Helper function to display config values.
-# This function will disappear in the future.
-def print_config(config):
-    for key in config["Mailfetch"]:
-        print(key,config["Mailfetch"][key])
-    return 0
-
-# Write current configuration values back to mailfetch.conf
-# May or may not be used in the future.
-def write_config(config,filename):
-    with open(filename,"w") as confFile:
-        config.write(confFile)
-    print("Configuration data written to",mailfetch_config_filename,"...")
-    return 0
 
 # Open a connection to server:port
 def open_connection(server,port):
@@ -125,13 +117,13 @@ def get_message_contents(socket,msg):
 
 def extract_attachment(attachment,path):
     filename = attachment.get_filename()
-    ctr = 0
+    counter = 0
 
     # If there is no filename... create one (Think about this !!!)
     # Also, join the filename and directory path to construct final save location
     if not filename:
         filename = 'attachment-%03d%s' % (counter, '.sav')
-        ctr = ctr + 1
+        counter += 1
     save_path = os.path.join(path,filename)
 
     # Don't overwrite a preexisting file with the same name
@@ -139,7 +131,7 @@ def extract_attachment(attachment,path):
         save_attachment(save_path,attachment)
     else:
         print(save_path,"already exists ...")
-    return 0
+    return save_path
 
 def save_attachment(location,attachment):
     fileptr = open(location,'wb')
@@ -149,4 +141,6 @@ def save_attachment(location,attachment):
     
     return 0
 
-main()
+if __name__ == '__main__':
+	initialize()
+	poll()
