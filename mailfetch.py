@@ -64,7 +64,8 @@ def poll():
 			path = extract_attachment(part,savedir)
 			
 			# put all the information here
-			jobinfo = pipeline.PrintJob(path, 'USERNAME')
+			sendaddr = get_sender_addr(connection,message)
+			jobinfo = pipeline.PrintJob(path,sendaddr)
 			infolist.append(jobinfo)
 
 	#write_config(mailfetch_config,mailfetch_config_filename)
@@ -113,9 +114,18 @@ def get_message_contents(socket,msg):
     typ, data = socket.fetch(msg, "(RFC822)")
     body = data[0][1]
     contents = email.message_from_bytes(body) # parsing the mail content to get a mail object
-    print (email.utils.parseaddr(contents['From']))
     return contents
 
+def get_sender_addr(socket,msg):
+	# There is some redundancy here, as this function initially does everytning
+	# in the first 3 lines of get_message_contents(). Improve Later !!!
+	typ, data = socket.fetch(msg, "(RFC822)")
+	body = data[0][1]
+	contents = email.message_from_bytes(body)
+	sender = email.utils.parseaddr(contents['From'])
+	print(sender[1])
+	return sender[1] # The sender addr
+	
 def extract_attachment(attachment,path):
 	filename = attachment.get_filename()
 	counter = 0
