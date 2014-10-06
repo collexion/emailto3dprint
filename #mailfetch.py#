@@ -1,5 +1,5 @@
-import imaplib	  # Facilitates connection to mailserver
-import email	  # Facilitates message parsing/extraction
+import imaplib	      # Facilitates connection to mailserver
+import email	      # Facilitates message parsing/extraction
 import os	      # Used to construct attachment save path
 import config
 import pipeline
@@ -18,14 +18,11 @@ import pipeline
 # run once at the top of the pipeline
 mail_password = None
 def initialize():
-	global mail_password
-	if mail_password == None:
-		mail_password = get_password()
+
 	
 # reads email, gets attachments, returns all attachments as list
-def poll():
-	global mail_password
-	if mail_password == None:
+def poll()
+if mail_password == None:
 		mail_password = get_password()
 
 	mailfetch_config = config.read_config()
@@ -113,26 +110,33 @@ def get_message_contents(socket,msg):
     typ, data = socket.fetch(msg, "(RFC822)")
     body = data[0][1]
     contents = email.message_from_bytes(body) # parsing the mail content to get a mail object
-    print (email.utils.parseaddr(contents['From']))
+    headers = Parser().parsestr('From: <user@example.com>\n'
+				'To: <someone_else@example.com>\n'
+				'Subject: Test message\n'
+				'\n'
+				'Body would go here\n')
+    print('To: %s' % headers['to'])
+    print('From: %s' % headers['from'])
+    print('Subject: %s' % headers['subject'])
     return contents
 
 def extract_attachment(attachment,path):
-	filename = attachment.get_filename()
-	counter = 0
+    filename = attachment.get_filename()
+    counter = 0
 
     # If there is no filename... create one (Think about this !!!)
     # Also, join the filename and directory path to construct final save location
-	if not filename:
-		filename = 'attachment-%03d%s' % (counter, '.sav')
-		counter += 1
-	save_path = os.path.join(path,filename)
+    if not filename:
+	filename = 'attachment-%03d%s' % (counter, '.sav')
+	counter += 1
+    save_path = os.path.join(path,filename)
 
     # Don't overwrite a preexisting file with the same name
-	if not os.path.isfile(save_path):
-		save_attachment(save_path,attachment)
-	else:
-		print(save_path,"already exists ...")
-	return save_path
+    if not os.path.isfile(save_path):
+	save_attachment(save_path,attachment)
+    else:
+	print(save_path,"already exists ...")
+    return save_path
 
 def save_attachment(location,attachment):
     fileptr = open(location,'wb')

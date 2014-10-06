@@ -9,13 +9,13 @@ cache = None
 config_filename = "mailfetch.conf"
 
 def read_config():
-	global cache
-	if cache != None:
-		return cache
+    global cache
+    if cache != None:
+        return cache
     config = configparser.ConfigParser()
     config.read(config_filename)
     print("Configuration data read from",config_filename,"...")
-	cache = config
+    cache = config
     return config
 
 	
