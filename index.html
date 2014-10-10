@@ -1,55 +1,72 @@
 <!DOCTYPE HTML PUBLIC "/W3C/DTD HTML 4.01/EN" 
-	"http:/www.w3.org/TR/html4/strict.dtd">
+    "http:/www.w3.org/TR/html4/strict.dtd">
 <html><head>
-	<title>Project Specification</title>
-	<link rel="stylesheet" type="text/css" href="assets/style.css"/>
-	</head>
+    <title>Email to 3D Print</title>
+    <link rel="stylesheet" type="text/css" href="assets/style.css"/>
+    </head>
 
-	<body>
-	<link href='http:/fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <body>
+    <link href='http:/fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 
-	<!-- Navigation Bar Markup -->
-	<div id="navbar_div">
-	<nav id="navbar">
-	<ul>
-		<li id="current_navbar_link"><a href='index.html'>PrintMail 3D</a></li>
+    <!-- Navigation Bar Markup -->
+    <div id="navbar_div">
+    <nav id="navbar">
+    <ul>
+        <li id="current_navbar_link"><a href='index.html'>Email to 3D Print</a></li>
 
-		<li><a href='html/schedule.html'>Schedule/Activity</a></li>
-		<li><a href='html/documentation.html'>Documentation</a></li>
-		<li><a href='#'>Links</a>
-			<ul>
-				<!-- This link is here so that I can easy jump to the live version from my repo'd version -->
-				<li><a href="http://www.collexion.net/emailto3dprint/">This Site</a></li>
-				<li><a href="https:/github.com/collexion/emailto3dprint">Github Repository</a></li>
-				<li><a href="http:/www.cs.uky.edu/~paulp/CS499/index.html">CS499 Class Website</a></li>
-				<li><a href="http:/www.cirrusmio.com/">Cirrus Mio</a></li>
-				<li><a href="http:/www.collexion.net/">Collexion Hackerspace</a></li>
-			</ul>			
-		</li>
-		<li><a href="html/teammembers.html">Team Members</a>
-			<ul>
-				<li><a href="html/ekstatus.html">Evan Keller</a></li>
-				<li><a href="html/ckstatus.html">Chad Klusek</a></li>
-				<li><a href="html/awstatus.html">Andy Ward</a></li>
-			</ul>
-		</li>
-	</ul>
-	</nav>
-	</div>
-	<!-- End Navigation Bar -->
-	<h1 id="titletext">Project Specification</h1>
-	
-	<!-- Text section -->
-	<p id="container">
-		<div id="content">
-			<p>The basic task is to put together a program that will reside on a computer connected to a MakerBot Replicator 2 3D Printer. It will recieve models to print through a dedicated email account. Our program should read the emails, extract the attachements, convert them into gcode, and send them to the printer to be printed. At all points in the pipeline, errors should be detected, and detailed error reports should be sent to both logs available to the admin, and to the user via email.</p>
-			
-			<p>The goal is to minimize required human interaction in the 3D process. Potential improvements include a method of extracting completed models automatically, reporting finished print jobs, and some way for remote users to keep track of their print job and estimate how soon it will be finished.</p>
-		</div>
-		<div id="signature">Contact Us at cs499.email3dprint@gmail.com</div>	
-	</p>
-	
+        <li><a href='html/schedule.html'>Schedule/Activity</a></li>
+        <li><a href='html/documentation.html'>Documentation</a></li>
+        <li><a href='#'>Links</a>
+            <ul>
+                <!-- This link is here so that I can easy jump to the live version from my repo'd version -->
+                <li><a href="http://www.collexion.net/emailto3dprint/">This Site</a></li>
+                <li><a href="https:/github.com/collexion/emailto3dprint">Github Repository</a></li>
+                <li><a href="http:/www.cs.uky.edu/~paulp/CS499/index.html">CS499 Class Website</a></li>
+                <li><a href="http:/www.cirrusmio.com/">Cirrus Mio</a></li>
+                <li><a href="http:/www.collexion.net/">Collexion Hackerspace</a></li>
+            </ul>           
+        </li>
+        <li><a href="html/teammembers.html">Team Members</a>
+            <ul>
+                <li><a href="https://github.com/collexion/emailto3dprint/wiki/Evan-Zeller-(Status)">Evan Zeller</a></li>
+                <li><a href="html/ckstatus.html">Chad Klusek</a></li>
+                <li><a href="html/awstatus.html">Andy Ward</a></li>
+            </ul>
+        </li>
+    </ul>
+    </nav>
+    </div>
+    <!-- End Navigation Bar -->
+    <h1 id="titletext">Email to 3D Print</h1>
+    
+    <!-- Text section -->
+    <p id="container">
+        <div id="content">
+        <img id="replicator" src="assets/replicator.jpg" title="MakerBot Replicator2" />
+    <h2>Introduction</h2>
 
-	</body>
+    <p>3D printing is now hitting its stride as a consumer level product with printers like the MakerBot <a href="https://store.makerbot.com/replicator-mini">Replicator Mini</a> and the <a href="https://store.makerbot.com/replicator2">Replicator2</a> now being affordable and easy to use. Hackers and geeks around the world have experimented and improved upon the hardware and software that drive this industry. Our clients at the <a href="http://www.collexion.net">collexion hackerspace</a> use 3D printing for education at <a href="http://www.fcps.net/schools/others/the-learning-center">The Learning Center</a>, a Fayette County Schools project in Lexington, Kentucky.</p>
+
+    <h2>Project Specifications</h2>
+
+    <p>The goal of this project is to provide a program (written in <a href="http://www.python.org">Python</a>), that acts as a pipeline for converting a valid 3D model, received via an email interface, into <a href="http://en.wikipedia.org/wiki/G-code">G-code</a> instructions that can be interpreted by a <a href="http://store.makerbot.com/replicator2">MakerBot Replicator2</a> 3D printer. This project aims to limit human interaction in the 3D printing process, by providing powerful tools to do the compilation and printing work, and an easy to use email interface that keeps the user informed about their print job's status. The only human interaction beyond an email submission, will be the removing of the previous build from the plate, and verification that the system is ready for the next build by collexion members. A list of specifications/features to be completed (in priority order and as time allows) follows:</p>
+
+    <ul>
+    <li>Should be able to receive a user submitted email, and verify that it contains an <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a> or <a href="http://en.wikipedia.org/wiki/STL_(file_format)">STL</a> formatted attachment.</li>
+    <li>Should be able to convert the model to a standard format (see: STL)</li>
+    <li>Should be able to validate the model can be printed</li>
+    <li>Should be able to slice the model (convert to G-code, see: <a href="https://github.com/alexrj/Slic3r"> slic3r</a>)</li>
+    <li>Should print or queue the model, only when the printer status is OK (see: <a href="http://en.wikipedia.org/wiki/Concurrency_(computer_science)">concurrency</a> and <a href="http://en.wikipedia.org/wiki/Mutual_exclusion">mutual exclusion</a>)</li>
+    <li>Printer status should be monitored</li>
+    <li>Print job status/build plate status should be logged</li>
+    <li>User should receive a notification email if there is a problem with the printer or their job</li>
+    <li>Detect if the printer is in an OK state automatically so the next job can be printed
+    </ul>            
+</div>
+<div id="signature">Contact Us at cs499.email3dprint@gmail.com</div>    
+</p>
+    
+
+    </body>
 </html>
 

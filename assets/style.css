@@ -86,21 +86,41 @@ body {
 #container {
 	position: relative;
 }
-
+#inline-images {
+	float: right;
+	max-width: 100%;
+	max-height:100%;
+	margin-bottom: 3%;
+}
 #content {
+	font-family: Open Sans, sans-serif;
 	color: #A5A3A3;
-	margin-right: 10%;
-	margin-left: 10%;
+	margin-right: 20%;
+	margin-left: 20%;
+}
+#thingomatic {
+	float:left; 
+	max-width:20%;
+	margin-right: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+#replicator {
+	float:right;
+	max-width: 60%;
+	margin-left: 3px;
+	margin-bottom: 3px;
+	margin-top: 3px;
 }
 #content a:link {
-	color: #1133EE;
+	color: #337799;
 }
 #content a:visited {
-	color: #A000FF;
+	color: #181133;
 }
 #signature {
 	font-size: 75%;
-	position: absolute;
-	bottom: 3%;
-	right: 3%;
+	float:right;
+	margin-bottom: 3%;
+	margin-right: 3%;
 }
