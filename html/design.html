@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "/W3C/DTD HTML 4.01/EN" 
+	"http:/www.w3.org/TR/html4/strict.dtd">
+<html><head>
+	<title>Email to 3D Print</title>
+	<link rel="stylesheet" type="text/css" href="../assets/style.css"/>
+	</head>
+
+	<body>
+	<link href='http:/fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- Navigation Bar Markup -->
+    <div id="navbar_div">
+    <nav id="navbar">
+    <ul>
+        <li><a href='../index.html'>Email to 3D Print</a></li>
+
+        <li><a href='schedule.html'>Schedule/Activity</a></li>
+        <li><a href='documentation.html'>Documentation</a></li>
+		<li id="current_navbar_link"><a href="design.html">Project Design</a></li>
+        <li><a href='#'>Links</a>
+            <ul>
+                <!-- This link is here so that I can easy jump to the live version from my repo'd version -->
+                <li><a href="http://www.collexion.net/emailto3dprint/">This Site</a></li>
+                <li><a href="https:/github.com/collexion/emailto3dprint">Github Repository</a></li>
+                <li><a href="http:/www.cs.uky.edu/~paulp/CS499/index.html">CS499 Class Website</a></li>
+                <li><a href="http:/www.cirrusmio.com/">Cirrus Mio</a></li>
+                <li><a href="http:/www.collexion.net/">Collexion Hackerspace</a></li>
+            </ul>           
+        </li>
+        <li><a href="teammembers.html">Team Members</a>
+            <ul>
+                <li><a href="https://github.com/collexion/emailto3dprint/wiki/Evan-Zeller-(Status)">Evan Zeller</a></li>
+                <li><a href="ckstatus.html">Chad Klusek</a></li>
+                <li><a href="awstatus.html">Andy Ward</a></li>
+            </ul>
+        </li>
+    </ul>
+    </nav>
+    </div>
+	<!-- End Navigation Bar -->
+	<h1 id="titletext">Project Design</h1>
+	
+	<!-- Text section -->
+	<p id="container">
+		<div id="content">
+<h4>Table of Contents</h4>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#dataflow">Module Description and Data Flow</a></li>
+<li><a href="#usecase">Use Case</a></li>
+<li><a href="#sizing">Sizing Estimate</a></li>
+</ul>
+<a name="overview"></a>
+<h4>Overview</h4>
+<p>The goal of this project is to provide a program (written in Python), that acts as a pipeline for converting a valid 3D model, received via an email interface, into G-code instructions that can be interpreted by a MakerBot Replicator2 3D printer. This project aims to limit human interaction in the 3D printing process, by providing powerful tools to do the compilation and printing work, and an easy to use email interface that keeps the user informed about their print job's status. The only human interaction beyond an email submission, will be the removing of the previous build from the plate, and verification that the system is ready for the next build by collexion members.<p>
+
+<h4>Environment</h4>
+<p>The application will be run on a standard PC stationed next to the 3D Printer running some Linux distro. There will be an admin who will be tasked with maintaining the computer and code at the site. The application itself will target CPython 3.4, as well as using calls to other programs. It will collect data by polling a predetermined GMail account, set up for that purpose.</p>
+<p>
+<img src="../assets/pythonlogo.png" width="55%">
+<img src="../assets/linuxlogo.png" width = "25%">
+</p>
+
+<a name="dataflow"></a>
+<h4>Module Descriptions and Data Flow</h4>
+<p>The application will take the form of a pipeline connecting four phases together. The primary way data is transferred between phases is by using the PrintJob structure, which stores the data from each step in the pipeline, as well as information regarding the user who sent the job. These structures are what is passed around the pipeline.</p>
+<h5>Mailfetch</h5>
+	<p>This is the initial step in the pipeline, and the step that retrieves the data.</p>
+<ul>
+<li>Read configuration data from a file on disk</li>
+<li>Open a socket to the Google mail server</li>
+<li>Login to the e-mail account</li>
+<li>Generate a list of unread messages from  the inbox</li>
+<li>For each message containing a valid attachment:
+	<ul>
+		<li>Capture the e-mail address of the sender</li>
+		<li>Save the attachment to disk</li>
+		<li>Create a PrintJob object to pass to later modules</li>
+	</ul>
+</li>
+<li>Logout of e-mail account and close connection socket</li>
+<li>After a number of minutes have elapsed, return to step 2</li>
+</ul>	
+
+<img src="../assets/dataflow.png" width="80%">
+
+<h5>Convert</h5>
+	<p>This phase will convert a 3D model in an unknown file type into an stl file, so it will go through the other steps in the pipeline.</p>
+<ul>
+<li>Find and open file listed for the previous step from the PrintJob.</li>
+<li>Determine format of the given file</li>
+<li>Make call to 3rd party code to carry out the conversion</li>
+<li>Check if error occurred</li>
+	<ul>
+	<li>if so, send email detailing what happened to the user</li>
+	</ul>
+<li>Find converted file, and store its location into the PrintJob.</li>
+</ul>
+
+<h5>Validate</h5>
+	<p>This phase will simply look at the produced stl file and determine if it is valid for printing. It will check that there are no holes in the mesh, reorient normals, and fix overly thin shells.</p>
+<ul>
+<li>Find and open file listed for the previous step from the PrintJob.</li>
+<li>Make call to 3rd party code to carry out the conversion</li>
+<li>Check if error occurred</li>
+	<ul>
+	<li>if so, send email detailing what happened to the user</li>
+	</ul>
+<li>Find converted file, and store its location into the PrintJob.</li>
+</ul>
+	
+<h5>Slice</h5>
+	<p>This phase will convert the stl model to gcode. GCode is the low level commands that tell the printer what to do with its print head, and depends heavily on the printer itself. It will requires a fair amount of fine tuning and optimization, so this step will be somewhat more complicated than the last two. We plan on using a 3rd party program called Slic3r.pl to handle the brunt of the work.</p>
+<ul>
+<li>Find and open file listed for the previous step from the PrintJob.</li>
+<li>Make call to 3rd party code to carry out the conversion</li>
+<li>Check if error occurred</li>
+	<ul>
+	<li>if so, send email detailing what happened to the user</li>
+	</ul>
+<li>Find converted file, and store its location into the PrintJob.</li>
+</ul>
+	
+<h5>Print</h5>
+	<p>This is the final stage and the end of the pipeline. We will simply hand off our sliced model to the printer using ReplicatorG, the standard tool for talking to the printer. At this point we will also store any information about the print job and the user, and jump back to the poller.</p>
+<ul>
+<li>Find and open file listed for the previous step from the PrintJob.</li>
+<li>Send file to printer using ReplicatorG</li>
+<li>Save important information about the user and job.</li>
+<li>Send information to user reporting the success of the print job.</li>
+</ul>
+
+<a name="usecase"></a>			
+<h4>Use Case</h4>
+<p>The typical user would be any person with access to The Learning Center who would like to print something, and knows the email address. They would send an email to the given address, with the model they want to print as an attachment. They quickly recieve an email that either tells them the print was succesfully processed, or reporting an error message, ideally with helpful suggestions about how to resolve the problem. All error messages are also sent to the admin.</p>
+
+<img src="../assets/usecaseflow.png">
+
+<h4>Design Considerations</h4>
+<p>There are many things we would like to implement that we suspect are infeasible because of time or hardware limitations. The biggest one is that we would like to implement some way to tell if the printer currently has a model waiting to be cleared from the plate, and potentially clear the model itself. We believe this will be prohibitively difficult, primarily because of our teams lack of experience with integrating hardware and software, and the time that will be neccesary to get up to speed.</p>
+
+<a name="sizing"></a>			
+<h4>Sizing Estimate</h4>
+<p>We will use lines of code to estimate the size of the project. The time and effort required for each part will have to be incorporated, however, since several parts of the code end up being one or two complex lines of code.<p>
+ 
+<p>Mailfetch: this part of the code is probably the most verbose, since it handles everything to do with email, including authentication, polling, saving attachments, creating and sending emails. By the end, I predict it will be roughly 200-250 lines of code.</p>
+ 
+<p>Converter: this part offloads a lot of work onto 3rd party code, so most of the code will be error handling (which will be fairly comprehensive) and pipeline bookkeeping. It should be roughly 100 lines.</p>
+ 
+<p>Validator: Like the previous step, most of the code is 3rd party. This one should be slightly more complex, since there is no existing application that does exactly what we want, like for the other modules. We will have to chain several other programs together. We still expect it to be about 100 lines of code at most.</p>
+ 
+<p>Slicer and Print: These steps will be roughly the same as the previous two, at no more than 100 lines of code each.</p>
+ 
+<p>Pipeline: This section handles the creation and implementation of the pipeline, as well as passing data and errors around between phases. This will be fairly simple code, but somewhat verbose. We predict about 150 - 200 lines of code.</p>
+ 
+<p>We also used the COCOMO II constructive cost model to estimate the actual time taken. Taking into account the the fact that deployment and testing after a certain point must be done onsite, and the lack of experience of our team with pretty much all the technology involved, we have an Effort Adjustment Factor of 1.107. Combined with our lines of code, we can expect the project to take 4.9 months.</p>	
+
+			
+			
+			
+		</div>
+		<div id="signature">Contact Us at cs499.email3dprint@gmail.com</div>	
+	</p>
+	
+
+	</body>
+</html>
+
