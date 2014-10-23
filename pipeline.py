@@ -4,6 +4,7 @@ This object represents the state of a single print job at one point in the pipel
 """
 class PrintJob(object):
 	Stages = ['pending', 'slicing', 'printing']
+	ID = 1000
 	@classmethod
 	def NextStage(klass, current):
 		i = klass.Stages.index(current)
@@ -20,7 +21,8 @@ class PrintJob(object):
 			return klass.Stages[i-1]
 		
 	def __init__(self, attachment_path, users_email = None):
-	
+		self.jobid = PrintJob.ID + 1
+		PrintJob.ID += 1
 		# remember who sent the job.
 		# this is useful so we can send error messages
 		# as well as keeping track of who uses the printer
@@ -50,4 +52,4 @@ class PrintJob(object):
 		self.status = PrintJob.NextStage(self.status)
 		
 	def __str__(self):
-		return '{0}: {1}'.format(self.sender, self.status)
+		return 'PrintJob<#{0} {1} [{1}]>'.format(self.jobid, self.sender, self.status)

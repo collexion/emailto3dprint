@@ -3,6 +3,8 @@ import email	  # Facilitates message parsing/extraction
 import os	      # Used to construct attachment save path
 import config
 import pipeline
+import getpass
+import logger
 # General Program Flow:
 #    - Read values of configuration variables in mailfetch.conf
 #    - Prompt user for the account password
@@ -17,13 +19,14 @@ import pipeline
 # this means you only need to log in once.
 # run once at the top of the pipeline
 mail_password = None
+mlogger = logger.Logger('mailfetch')
 def initialize():
 	global mail_password
 	if mail_password == None:
 		mail_password = get_password()
 	
 # reads email, gets attachments, returns all attachments as list
-def poll():
+def poll(verbose = True):
 	global mail_password
 	if mail_password == None:
 		mail_password = get_password()
@@ -79,13 +82,13 @@ def poll():
 # ~AW: This will have to be automated eventually
 def get_password():
     prompt = "Enter the account password:"
-    pwd = input(prompt)
+    pwd = getpass.getpass(prompt)
     return pwd
 
 # Open a connection to server:port
 def open_connection(server,port):
     socket = imaplib.IMAP4_SSL(server,port)
-    print("Connecting to server",server,"...")
+    mlogger.log("Connecting to server",server,"...")
     return socket
 
 # Login to mailserver
@@ -95,10 +98,10 @@ def open_connection(server,port):
 #     mbox - name of the mailbox to check
 def login(socket,id,pwd,mbox):
     socket.login(id,pwd)
-    print("Logged in as",id,"...")
+    mlogger.log("Logged in as",id,"...")
 
     socket.select(mbox)
-    print("Selected Mailbox:",mbox)
+    mlogger.log("Selected Mailbox:",mbox)
 
     return 0
 
@@ -107,7 +110,7 @@ def get_message_list(socket):
     # to get to the message body
     typ, data = socket.search(None,"UNSEEN")
     list = data[0].split()
-    print("Returning Message List...")
+    mlogger.log("Returning Message List...")
     return list
 
 def get_message_contents(socket,msg):
@@ -123,7 +126,7 @@ def get_sender_addr(socket,msg):
 	body = data[0][1]
 	contents = email.message_from_bytes(body)
 	sender = email.utils.parseaddr(contents['From'])
-	print(sender[1])
+	mlogger.log(sender[1])
 	return sender[1] # The sender addr
 	
 def extract_attachment(attachment,path):
@@ -141,13 +144,14 @@ def extract_attachment(attachment,path):
 	if not os.path.isfile(save_path):
 		save_attachment(save_path,attachment)
 	else:
-		print(save_path,"already exists ...")
+		# should this throw an exception?
+		mlogger.log(save_path,"already exists ...")
 	return save_path
 
 def save_attachment(location,attachment):
     fileptr = open(location,'wb')
     fileptr.write(attachment.get_payload(decode=True))
-    print("Saved attachment",location)
+    mlogger.log("Saved attachment",location)
     fileptr.close()
     
     return 0
