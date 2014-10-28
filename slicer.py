@@ -9,7 +9,7 @@ def slice(jobinfo):
 	
 	basename = os.path.basename(infile)
 	outfile = basename+'.gcode'
-	command = "../Slic3r/slic3r-console.exe \"{0}\" --load slicerconf.ini --output {1}".format(infile, outfile)
+	command = "c:/python27/python.exe ../skeinforge/skeinforge_application/skeinforge_utilities/skeinforge_craft.py {0}".format(infile, outfile)
 	print("$ {0}".format(command))
-	os.system(command)
+	output = os.popen(command).read()
 	jobinfo.next_stage(outfile)
