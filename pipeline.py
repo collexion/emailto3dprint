@@ -26,12 +26,15 @@ class PrintJob(object):
 		# this will help keep track of errors
 		self.status = "pending"
 	
+	def advance(self):
+		self.status = self.next_stage()
+	
 	# return the file created in the last stage
 	def previous_file(self):
 		return self.files.prev(self.status)
 	
 	# finish the current stage
-	def next_stage(self, info):
+	def next_stage(self):
 		return self.files.next(self.status)
 		
 	def __str__(self):
