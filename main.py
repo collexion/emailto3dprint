@@ -25,10 +25,9 @@ def main():
 	
 		# mailfetch.poll gets list of printjobs to work on
 		for job in mailfetch.poll():
-			"""
-			pipeline goes here
-			I'm not doing any concurrency on the pipeline since python doesn't support it very well, and it wouldn't give us a significant speed up anyway.
-			"""
+			#pipeline goes here
+			#each step of the pipeline sets the status and then runs the stage
+			#the stage should store a new file if one is created, but nothing else.
 			job.status = 'converting'
 			converter.convert(job)
 			

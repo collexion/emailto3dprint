@@ -33,13 +33,20 @@ class PrintJob(object):
 		# update status everytime we pass it to a new step
 		# this will help keep track of errors
 		self.status = "pending"
+		
+	
 	def __setitem__(self, key, value):
+		# store a file for the given stage.
 		n = self.stages[key]
 		self.files[n] = value
+		
 	def __getitem__(self, key):
+		# retrieve the given file for the given stage
 		n = self.stages[key]
 		return self.files[n]
+		
 	def previous_file(self):
+		# gets the last file that was stored in the job
 		n = self.stages[self.status]
 		value = self.files[n]
 		while n > 0 and value == None:
@@ -49,18 +56,22 @@ class PrintJob(object):
 		return value
 			
 	def next(self, key):
+		# gets the stage that comes after this one.
 		n = self.stages[key]
 		n += 1
 		for key, value in self.stages.items():
 			if n == value:
 				return key
 		raise IndexError("No stage after {0}".format(key))
+		
 	def prev(self, key):
+		# gets the stage that comes before this one
 		n = self.stages[key]
 		n -= 1
 		for key, value in self.stages.items():
 			if n == value:
 				return key
 		raise IndexError("No stage before {0}".format(key))
+		
 	def __str__(self):
 		return 'PrintJob<#{0} {1} [{2}]>'.format(self.jobid, self.sender, self.status)

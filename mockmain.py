@@ -1,5 +1,5 @@
 import mailfetch
-import time
+import time, sys
 import config
 import logger
 import pipeline
@@ -16,12 +16,15 @@ def main():
 	# also caches the file for stages
 	configrc = config.read_config()
 	
-	# set up mailfetch. Just fetches the password for now.
-	# v option is temporary, and prevents pipeline from flooding console
-	# should eventually be replaced by proper logging system
+	#load the logger
 	plogger = logger.Logger('pipeline')
 	
-	job = pipeline.PrintJob("../Cube_Base.stl", "username@email.com")
+	if len(sys.argv) == 1:
+		plogger.log("Error: no model given to pipeline")
+		return
+	infile = sys.argv[1]
+	
+	job = pipeline.PrintJob(infile, "username@email.com")
 
 	job.status = 'converting'
 	converter.convert(job)
@@ -32,6 +35,7 @@ def main():
 	job.status = 'slicing'	
 	job = slicer.slice(job)
 	
+	job.status = 'printing'
 	#printer.send_job(job)
 		
 if __name__ == '__main__':
