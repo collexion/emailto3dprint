@@ -1,9 +1,11 @@
 import os
 import config
+import logger
 """
 This doesn't yet work, not least because I don't have slic3r installed.
 However, this is the format I am assuming
 """
+slice_logger = logger.Logger('slicer')
 def slice(jobinfo):
 	assert(jobinfo.status == 'slicing')
 	conf = config.read_config()
@@ -17,6 +19,8 @@ def slice(jobinfo):
 	root, ext = os.path.splitext(basename)
 	outfile = root+'.gcode'
 	command = '{0} "{1}" --output "{2}" --load {3}'.format(slice_command, infile, outfile, slice_ini)
-	print("$ "+command)
+	
 	#output = os.popen(command).read()
-	jobinfo.next_stage(outfile)
+	slice_logger.log("$ "+command)
+	
+	jobinfo['slicing'] = outfile
