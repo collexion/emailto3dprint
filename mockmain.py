@@ -6,8 +6,8 @@ import pipeline
 
 import slicer
 import converter
-#import validator
-#import printer
+import validator
+import printer
 """
 Each step of the module should be a function that takes a PrintJob object, and returns a new PrintJob object. See pipeline.py for more info.
 """
@@ -29,14 +29,14 @@ def main():
 	job.status = 'converting'
 	converter.convert(job)
 	
-	#job.status = 'validating'
-	#validator.validate(job)
+	job.status = 'validating'
+	validator.validate(job)
 	
 	job.status = 'slicing'	
-	job = slicer.slice(job)
+	slicer.slice(job)
 	
 	job.status = 'printing'
-	#printer.send_job(job)
+	printer.send_job(job)
 		
 if __name__ == '__main__':
 	main()
