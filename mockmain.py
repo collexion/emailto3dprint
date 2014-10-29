@@ -1,17 +1,42 @@
 import mailfetch
-import time
+import time, sys
 import config
 import logger
 import pipeline
+
 import slicer
+import converter
+#import validator
+#import printer
 """
-This is a fake main function used to test slicer by itself, without having to use mailfetch each time.
+Each step of the module should be a function that takes a PrintJob object, and returns a new PrintJob object. See pipeline.py for more info.
 """
 def main():
-	job = pipeline.PrintJob("../skeinforge/test.stl", "user@email.com")
-	job.status = 'slicing'
-	njob = slicer.slice(job)
+	# read the config file. We'll need this later.
+	# also caches the file for stages
+	configrc = config.read_config()
 	
+	#load the logger
+	plogger = logger.Logger('pipeline')
+	
+	if len(sys.argv) == 1:
+		plogger.log("Error: no model given to pipeline")
+		return
+	infile = sys.argv[1]
+	
+	job = pipeline.PrintJob(infile, "username@email.com")
+
+	job.status = 'converting'
+	converter.convert(job)
+	
+	#job.status = 'validating'
+	#validator.validate(job)
+	
+	job.status = 'slicing'	
+	job = slicer.slice(job)
+	
+	job.status = 'printing'
+	#printer.send_job(job)
 		
 if __name__ == '__main__':
 	main()

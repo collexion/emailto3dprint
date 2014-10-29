@@ -4,6 +4,9 @@ import config
 import logger
 
 import slicer
+import converter
+#import validator
+#import printer
 """
 Each step of the module should be a function that takes a PrintJob object, and returns a new PrintJob object. See pipeline.py for more info.
 """
@@ -22,16 +25,20 @@ def main():
 	
 		# mailfetch.poll gets list of printjobs to work on
 		for job in mailfetch.poll():
-			job.advance() # leave pending stage
-			"""
-			pipeline goes here
-			I'm not doing any concurrency on the pipeline since python doesn't support it very well, and it wouldn't give us a significant speed up anyway.
-			"""
+			#pipeline goes here
+			#each step of the pipeline sets the status and then runs the stage
+			#the stage should store a new file if one is created, but nothing else.
+			job.status = 'converting'
+			converter.convert(job)
 			
-			# this should be removed when we implement
-			# the other stages
+			#job.status = 'validating'
+			#validator.validate(job)
+			
 			job.status = 'slicing'
 			job = slicer.slice(job)
+			
+			#job.status = 'printing'
+			#printer.send_job(job)
 			
 		# wait a while. This lets the computer do something else
 		delay_time = float(configrc['Pipeline']['poll_frequency'])
