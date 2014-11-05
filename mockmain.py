@@ -29,8 +29,9 @@ def main():
 	job.status = 'converting'
 	converter.convert(job)
 	
-	job.status = 'validating'
-	validator.validate(job)
+	#replaced by slic3r automatic validation
+	#job.status = 'validating'
+	#validator.validate(job)
 	
 	job.status = 'slicing'	
 	slicer.slice(job)

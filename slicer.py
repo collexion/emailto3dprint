@@ -18,17 +18,14 @@ def slice(jobinfo):
         
         # get the last file worked on (validated file)
         infile = jobinfo.previous_file()
-        
-        # put together the input and output filenames
-        #basename = os.path.basename(infile)
-        #root, ext = os.path.splitext(basename)
-        #outfile = root+'.gcode'
 
         # CK - Modified to work on my linux VM - passes
 	# Infile OK as is, must do some work for correct outfile
 	# Remove original file extension and add .gcode extension
-        root = (infile.split('.')[0])
-        outfile = root + ".gcode"
+	# AW - fixed to work with file paths that contain periods
+        # put together the input and output filenames
+        root, ext = os.path.splitext(infile)
+        outfile = root+'.gcode'
 
         # construct the actual command line call
 	# CK - Removed quotes around infile and outfile names

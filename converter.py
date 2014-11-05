@@ -12,8 +12,7 @@ def convert(jobinfo):
 	
 	# determine input and output filenames
 	infile = jobinfo.previous_file()
-	basename = os.path.basename(infile)
-	root, ext = os.path.splitext(basename)
+	root, ext = os.path.splitext(infile)
 	
 	
 	outfile = None
