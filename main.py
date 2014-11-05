@@ -31,14 +31,14 @@ def main():
 			job.status = 'converting'
 			converter.convert(job)
 			
-			#job.status = 'validating'
-			#validator.validate(job)
+			job.status = 'validating'
+			validator.validate(job)
 			
 			job.status = 'slicing'
-			job = slicer.slice(job)
+			slicer.slice(job)
 			
-			#job.status = 'printing'
-			#printer.send_job(job)
+			job.status = 'printing'
+			printer.send_job(job)
 			
 		# wait a while. This lets the computer do something else
 		delay_time = float(configrc['Pipeline']['poll_frequency'])
