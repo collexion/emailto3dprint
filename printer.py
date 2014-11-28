@@ -8,17 +8,18 @@ def send_job(jobinfo):
 	
 	#read  config file information
 	conf = config.read_config()
-	encode_command = conf['Printer']['Encoder']
+	command = conf['Printer']['Encoder']
+	machine = conf['Printer']['Encoder']
 	
 	# determine input and output filenames
 	infile = jobinfo.previous_file()
 	root, ext = os.path.splitext(infile)
-	encoded_file = '/dev/tty/usb0/' + os.path.basename(root) + ".x3g"
+	
+	outfile = '/dev/ttyUsb0'
 	
 	# convert to .x3g
-	encode_command = '{0} {1} {2}'.format(encode_command, 
+	command = '{0} -s -m {3} {1} {2}'.format(encode_command, infile, outfile, machine)
 	# run command
-	command = '{0} {1} < {2}'.format(print_command, infile, pronsole_commands)
 		
 	#output = os.popen(command).read()
 	prlogger.log("$ "+command)
