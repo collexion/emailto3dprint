@@ -53,18 +53,16 @@ def poll(verbose = True):
     try:
         connection = open_connection(servername,portnumber)
     except:
-        print("Failed to open connection to",servername,":",portnumber)
-        print("Error logged.")
+        mlogger.log("Failed to open connection to",servername,":",portnumber)
         print("Exiting.")
         return -1
     socket.setdefaulttimeout(None)
 
     # If a socket is opened successfully, try to login to the server
-	try:
-    	login(connection,username,mail_password,mailbox)
+    try:
+        login(connection,username,mail_password,mailbox)
     except:
-        print("Failed to login to",servername,":",portnumber)
-        print("Error logged.")
+        mlogger.log("Failed to login to",servername,":",portnumber)
         print("Exiting.")
         return -2
 
