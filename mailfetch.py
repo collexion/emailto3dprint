@@ -5,6 +5,8 @@ import config
 import pipeline
 import getpass
 import logger
+import socket
+
 # General Program Flow:
 #    - Read values of configuration variables in mailfetch.conf
 #    - Prompt user for the account password
@@ -31,6 +33,7 @@ def poll(verbose = True):
     if mail_password == None:
         mail_password = get_password()
 
+    # Read program config file for common variable values
     mailfetch_config = config.read_config()
 
     servername = mailfetch_config["Mailfetch"]["server"]
@@ -40,10 +43,32 @@ def poll(verbose = True):
     savedir = mailfetch_config["Mailfetch"]["savedir"]
     allowedtypes = mailfetch_config["Mailfetch"]["extensions"]
 
-    connection = open_connection(servername,portnumber)
+    # Try to open a connection to the email server.
+    # Using a method from the socket library, I am temporarily
+    # imposing a timeout restriction to keep the program from
+    # hanging on an invalid mailserver name.
+    # After the connection, timeout must be reset to NONE to
+    # place the socket back in blocking mode.
+    socket.setdefaulttimeout(5)
+    try:
+        connection = open_connection(servername,portnumber)
+    except:
+        print("Failed to open connection to",servername,":",portnumber)
+        print("Error logged.")
+        print("Exiting.")
+        return -1
+    socket.setdefaulttimeout(None)
 
-    login(connection,username,mail_password,mailbox)
+    # If a socket is opened successfully, try to login to the server
+	try:
+    	login(connection,username,mail_password,mailbox)
+    except:
+        print("Failed to login to",servername,":",portnumber)
+        print("Error logged.")
+        print("Exiting.")
+        return -2
 
+    # Populate a list with parsed email info
     infolist = []
     messagelist = get_message_list(connection)
     for message in messagelist:
@@ -78,9 +103,7 @@ def poll(verbose = True):
             jobinfo = pipeline.PrintJob(path,sendaddr)
             infolist.append(jobinfo)
 
-    #write_config(mailfetch_config,mailfetch_config_filename)
-
-    # Clean up when done
+    # Close connections and return list of job request info
     connection.close()
     connection.logout()
     return infolist
