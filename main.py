@@ -2,6 +2,7 @@ import mailfetch
 import time
 import config
 import logger
+import user_tracking as users
 
 import slicer
 import converter
@@ -15,6 +16,8 @@ def main():
 	# also caches the file for stages
 	configrc = config.read_config()
 	
+	udb = users.UserDB()
+	
 	# set up mailfetch. Just fetches the password for now.
 	# v option is temporary, and prevents pipeline from flooding console
 	# should eventually be replaced by proper logging system
@@ -25,6 +28,18 @@ def main():
 	
 		# mailfetch.poll gets list of printjobs to work on
 		for job in mailfetch.poll():
+			
+			email = job.sender
+			
+			user = udb.find_user(email)
+			
+			if user != None:
+				user.jobs_submitted += 1
+			else:
+				user = users.User(email, 1)
+			
+			udb.add_user(user)
+		
 			#pipeline goes here
 			#each step of the pipeline sets the status and then runs the stage
 			#the stage should store a new file if one is created, but nothing else.
