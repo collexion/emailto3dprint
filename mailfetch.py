@@ -66,7 +66,7 @@ def poll(verbose = True):
     try:
         connection = open_connection(servername,portnumber)
     except:
-        mlogger.log("Failed to open connection to",servername,":",portnumber)
+        mlogger.log("Mailfetch failed to open connection to",servername,":",portnumber)
         print("Exiting.")
         return -2
     socket.setdefaulttimeout(None)
@@ -75,7 +75,7 @@ def poll(verbose = True):
     try:
         login(connection,username,mail_password,mailbox)
     except:
-        mlogger.log("Failed to login to",servername,":",portnumber)
+        mlogger.log("Mailfetch failed to login to",servername,":",portnumber)
         print("Exiting.")
         return -3
 
