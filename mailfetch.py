@@ -1,11 +1,21 @@
+#
+# mailfetch.py
+# 
+# The purpose of this module is extract *.stl and *.obj model
+# attachments and the sender's email address, from print requests
+# sent to a default email account. In a normal case, a PrintJob object
+# is created and passed to the pipeline module for further processing.
+# Catastrophic errors are noted via the logger module.
+#
+
 import imaplib    # Facilitates connection to mailserver
 import email      # Facilitates message parsing/extraction
 import os         # Used to construct attachment save path
-import config
-import pipeline
-import getpass
-import logger
-import socket
+import config     # Module for importing configuration variable values
+import pipeline   # Module to facilitate the entire model to print process
+import getpass    # Module to ask for email account password
+import logger     # Module to log useful messages
+import socket     # Used to enforce timeout error condition
 
 # General Program Flow:
 #    - Read values of configuration variables in mailfetch.conf
@@ -16,7 +26,6 @@ import socket
 #    - "Walk" through parts of each message to find attachments
 #    - Extract and save found attachments
 #    - Logout and close connection
-#    - (Optional?) write configuration variables to mailfetch.conf
 
 # this means you only need to log in once.
 # run once at the top of the pipeline
@@ -34,14 +43,18 @@ def poll(verbose = True):
         mail_password = get_password()
 
     # Read program config file for common variable values
-    mailfetch_config = config.read_config()
-
-    servername = mailfetch_config["Mailfetch"]["server"]
-    portnumber = mailfetch_config["Mailfetch"]["port"]
-    username = mailfetch_config["Mailfetch"]["username"]
-    mailbox = mailfetch_config["Mailfetch"]["mailbox"]
-    savedir = mailfetch_config["Mailfetch"]["savedir"]
-    allowedtypes = mailfetch_config["Mailfetch"]["extensions"]
+    try:
+        mailfetch_config = config.read_config()
+        servername = mailfetch_config["Mailfetch"]["server"]
+        portnumber = mailfetch_config["Mailfetch"]["port"]
+        username = mailfetch_config["Mailfetch"]["username"]
+        mailbox = mailfetch_config["Mailfetch"]["mailbox"]
+        savedir = mailfetch_config["Mailfetch"]["savedir"]
+        allowedtypes = mailfetch_config["Mailfetch"]["extensions"]
+    except:
+        mlogger.log("Mailfetch configuration error")
+        print("Exiting.")
+        return -1
 
     # Try to open a connection to the email server.
     # Using a method from the socket library, I am temporarily
@@ -55,7 +68,7 @@ def poll(verbose = True):
     except:
         mlogger.log("Failed to open connection to",servername,":",portnumber)
         print("Exiting.")
-        return -1
+        return -2
     socket.setdefaulttimeout(None)
 
     # If a socket is opened successfully, try to login to the server
@@ -64,7 +77,7 @@ def poll(verbose = True):
     except:
         mlogger.log("Failed to login to",servername,":",portnumber)
         print("Exiting.")
-        return -2
+        return -3
 
     # Populate a list with parsed email info
     infolist = []
