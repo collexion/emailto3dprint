@@ -7,9 +7,9 @@
 #
 #
 
-import smtplib
-import config
-import getpass
+import smtplib # Facilitates sending email
+import config  # Module for importing configuration variable values
+import getpass # Module to ask for email account password
 
 mail_password = None
 #mlogger = logger.Logger('mailsend')
@@ -69,8 +69,3 @@ def get_password():
     prompt = "Enter the account password:"
     pwd = getpass.getpass(prompt)
     return pwd
-
-def main():
-    send("klusek@uky.edu","success")
-
-main()
