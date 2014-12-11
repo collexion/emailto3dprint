@@ -15,6 +15,27 @@ import logger     # Module to log useful messages
 mail_password = None
 mlogger = logger.Logger('mailsend')
 
+class EmailFile(object):
+	def __init__(self, address):
+		self.receiver = address
+	def write(self, text):
+		send(self.receiver, text)
+
+def error_message(reason):
+    if (reason == "convert"):
+        return str_error_message("Unable to convert model from .obj to .stl")
+    elif (reason == "validate"):
+        return str_error_message("Model failed validation")
+    elif (reason == "slice"):
+        return str_error_message("Slicing failure")
+    elif (reason == "print"):
+        return str_error_message("Printer failure")
+    else:
+        return str_error_message(reason)
+        
+def str_error_message(reason):
+    return "This is an automated message to inform you that your recent print job has failed.\nReason: {0}".format(reason)
+
 def send(receiver,stage):
     global mail_password
     if mail_password == None:
@@ -36,18 +57,17 @@ def send(receiver,stage):
 
     # Form subject line and message body based on print job result
     if (stage == "convert"):
-        body = "This is an automated message to inform you that your recent print job has failed.\nReason: Unable to convert model from .obj to .stl"
+        body = error_message("Unable to convert model from .obj to .stl")
     elif (stage == "validate"):
-        body = "This is an automated message to inform you that your recent print job has failed.\nReason: Model failed validation"
+        body = error_message("Model failed validation")
     elif (stage == "slice"):
-        body = "This is an automated message to inform you that your recent print job has failed.\nReason: Slicing failure"
+        body = error_message("Slicing failure")
     elif (stage == "print"):
-        body = "This is an automated message to inform you that your recent print job has failed.\nReason: Printer failure"
+        body = error_message("Printer failure")
     elif (stage == "success"):
         body = "This is an automated message to inform you that your recent print job was successful."
-    else: # This should never happen
-        mlogger.log("Invalid Mailsend Stage:",stage)
-        return -1
+    else:
+        body = error_message(stage)
 
     # Open a socket to SMTP server
     try:

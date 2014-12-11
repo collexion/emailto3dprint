@@ -13,7 +13,8 @@ def convert(jobinfo):
 	# determine input and output filenames
 	infile = jobinfo.previous_file()
 	root, ext = os.path.splitext(infile)
-	
+	if ext not in conf['Mailfetch']['extensions']:
+		conv_logger.error(jobinfo, 'File is in an unsupported format {0}'.format(ext))
 	
 	outfile = None
 	# don't bother converting if you already have an stl

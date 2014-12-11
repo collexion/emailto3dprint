@@ -2,11 +2,11 @@ import config
 import sys, os
 import time
 
+
 #########
 # This module allows us to have fine tuned control over what gets printed and to where.
 # In the future in can be extended to be helpful for the admin
 #########
-
 
 # get logger config info from config file
 config_data = config.read_config()
@@ -32,6 +32,9 @@ def load_file(flname):
 		return sys.stdout
 	elif flname == 'stderr':
 		return sys.stderr
+	elif flname.startswith('email:'):
+		import mailsend
+		return mailsend.EmailFile(flname[6:])
 	else:
 		return open(flname, 'w')
 
@@ -52,6 +55,9 @@ class Logger(object):
 	def set_option(self, **kwargs):
 		self.options.update(kwargs)
 		
+	def set_logfile(self, flname):
+		self.options['logfile'] = flname
+		
 	def enable(self):
 		self.options['enable'] = True
 		
@@ -60,6 +66,18 @@ class Logger(object):
 		
 	def get_timestamp(self):
 		return time.strftime('[%c]')
+		
+	def error(self, info, what):
+		import mailsend
+		text = mailsend.error_message(what)
+		addr = 'email:' + info.sender
+		self.log_to(addr, text)
+		
+	def log_to(self, flname, *text):
+		tmp = self.options['logfile']
+		self.set_logfile(flname)
+		self.log(*text)
+		self.set_logfile(tmp)
 		
 	def log(self, *text):
 		text = ' '.join(str(x) for x in text)
@@ -71,4 +89,4 @@ class Logger(object):
 			output_line = timestamp + str(text) + os.linesep
 			logfile = load_file(self.options['logfile'])
 			logfile.write(output_line)
-			
+		
