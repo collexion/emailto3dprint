@@ -8,7 +8,7 @@ def send_job(jobinfo):
 	
 	#read  config file information
 	conf = config.read_config()
-	command = conf['Printer']['Encoder']
+	encode_command = conf['Printer']['Encoder']
 	machine = conf['Printer']['Encoder']
 	
 	# determine input and output filenames

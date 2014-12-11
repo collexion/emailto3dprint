@@ -62,7 +62,7 @@ def poll(verbose = True):
     # hanging on an invalid mailserver name.
     # After the connection, timeout must be reset to NONE to
     # place the socket back in blocking mode.
-    socket.setdefaulttimeout(5)
+    socket.setdefaulttimeout(10)
     try:
         connection = open_connection(servername,portnumber)
     except:
